@@ -1,2 +1,20 @@
-1. docker+snakemake based preprocessing pipeline
-2. data analysis script
+Run the pipeline:
+
+step 1: prepare ref index using bowtie2-build .fasta
+1. define samples and reads wildcard, make sure the combination could locate the file; 
+2. define ref genome in macs2 peakcall -g; 
+3. check the thread setting whether it fits the # environment; 
+4. set the ref index base name correctly in the alignment part)
+5. pull the docker image: docker pull jiangyanyu/yeast_chipseq:1.0
+
+step 2: run docker and link env folder, fastq folder, tmp folder, ref index folder and output folder.
+
+docker run -it --rm --name Chip_preprocessing \
+ -v /media/agschlitzer/DATA1/jyu/G4/Zuo1ChIPseqdata/output/:/output/ \
+ -v /media/agschlitzer/DATA1/jyu/G4/Zuo1ChIPseqdata/:/data/ \
+ -v /media/agschlitzer/DATA1/jyu/G4/S288C_reference_genome_R64-4-1_20230830/bowtie_index/:/data/bowtie2-index/genomefiles \
+ jiangyanyu/yeast_chipseq:1.0 /bin/bash
+
+step 3: run file
+copy env folder from previous run to /data/ (downloaded from https://github.com/JiangyanYu/yeast_chipseq)
+snakemake --snakefile /data/Snakefile --use-conda --cores 28 --verbose
